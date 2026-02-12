@@ -15,7 +15,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       padding: 20px;
       background-color: #fff;
       min-height: 100vh;
@@ -34,7 +33,6 @@
       gap: 10px;
     }
 
-    /* 각 메뉴 태그 */
     .menu-item {
       display: inline-block;
       padding: 10px 20px;
@@ -58,17 +56,17 @@
       border-radius: 20px;
       cursor: pointer;
       font-size: 1em;
+      font-family: 'Gowun Dodum', sans-serif;
     }
-    button, input, select, textarea {
-    font-family: 'Gowun Dodum', sans-serif;
-    }
-    
+
     .primary-btn { background-color: #fbe8c5; color: black; }
     .secondary-btn { background-color: #fdddef; color: black; }
-    .selected { background-color: #8346b8 !important; color: white !important; }
+    .selected { background-color: #388e3c !important; color: white !important; }
 
     .category-title { margin-top: 20px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
     .container { text-align: center; margin-bottom: 10px; }
+
+    #footer-info { margin-top:50px; text-align:center; font-size:0.9em; color:#555; }
   </style>
 </head>
 <body>
@@ -84,11 +82,10 @@
   <div class="category-title">📂 종류</div>
   <div id="primary" class="container">
     <button class="primary-btn" onclick="selectPrimary('요리', this)">요리</button>
-    <button class="primary-btn" onclick="selectPrimary('요리', this)">반찬</button>
+    <button class="primary-btn" onclick="selectPrimary('반찬', this)">반찬</button>
     <button class="primary-btn" onclick="selectPrimary('배달', this)">배달</button>
     <button class="primary-btn" onclick="selectPrimary('외식', this)">외식</button>
-    <button class="primary-btn" onclick="selectPrimary('간식', this)">간단</button>
-    
+    <button class="primary-btn" onclick="selectPrimary('간단', this)">간단</button>
   </div>
 
   <!-- 2차 카테고리 -->
@@ -102,7 +99,6 @@
   </div>
 
   <script>
-    // 메뉴 데이터 (태그 형식)
     const menuData = [
       { name: "김치볶음밥", tags: ["요리", "밥", "간단"] },
       { name: "간장계란밥", tags: ["요리", "밥", "간단"] },
@@ -170,7 +166,6 @@
       { name: "비빔국수", tags: ["요리", "면"] },
       { name: "우동", tags: ["요리", "국", "면"] },
       { name: "메밀국수", tags: ["요리", "국", "면", "외식"] },
-      // ===== 반찬 =====
       { name: "계란말이", tags: ["반찬", "기타"] },
       { name: "동그랑땡", tags: ["반찬", "기타"] },
       { name: "소세지야채볶음", tags: ["반찬", "기타"] },
@@ -207,7 +202,6 @@
       { name: "동태전", tags: ["반찬", "채소"] },
       { name: "잡채", tags: ["요리", "반찬", "기타"] },
       { name: "도토리묵", tags: ["반찬"] },
-      // ===== 배달, 간단 =====
       { name: "치킨", tags: ["배달", "고기"] },
       { name: "옛날통닭", tags: ["배달", "고기"] },
       { name: "타코야끼", tags: ["배달"] },
@@ -235,7 +229,6 @@
       { name: "치킨마요덮밥", tags: ["배달", "밥", "간단"] },
       { name: "해쉬브라운", tags: ["요리", "간단"] },
       { name: "스파게티", tags: ["요리", "면"] },
-      // ===== 외식 =====
       { name: "갈매기살", tags: ["외식", "고기"] },
       { name: "칠리새우", tags: ["외식"] },
       { name: "파스타", tags: ["외식", "면", "요리"] },
@@ -262,57 +255,54 @@
     let secondaryChoices = [];
 
     function selectPrimary(choice, btn) {
-  const index = primaryChoices.indexOf(choice);
-  if (index === -1) { // 선택 안 되어 있으면 추가
-    primaryChoices.push(choice);
-    btn.classList.add('selected');
-  } else { // 이미 선택되어 있으면 제거
-    primaryChoices.splice(index, 1);
-    btn.classList.remove('selected');
-  }
-}
+      const index = primaryChoices.indexOf(choice);
+      if (index === -1) {
+        primaryChoices.push(choice);
+        btn.classList.add('selected');
+      } else {
+        primaryChoices.splice(index, 1);
+        btn.classList.remove('selected');
+      }
+    }
 
-function selectSecondary(choice, btn) {
-  const index = secondaryChoices.indexOf(choice);
-  if (index === -1) {
-    secondaryChoices.push(choice);
-    btn.classList.add('selected');
-  } else {
-    secondaryChoices.splice(index, 1);
-    btn.classList.remove('selected');
-  }
-}
+    function selectSecondary(choice, btn) {
+      const index = secondaryChoices.indexOf(choice);
+      if (index === -1) {
+        secondaryChoices.push(choice);
+        btn.classList.add('selected');
+      } else {
+        secondaryChoices.splice(index, 1);
+        btn.classList.remove('selected');
+      }
+    }
 
-function showResult() {
-  const resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = ""; // 초기화
+    function showResult() {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "";
 
-  // 필터링
-  let filtered = menuData.filter(item => {
-    const matchPrimary = primaryChoices.length === 0 || primaryChoices.some(tag => item.tags.includes(tag));
-    const matchSecondary = secondaryChoices.length === 0 || secondaryChoices.some(tag => item.tags.includes(tag));
-    return matchPrimary && matchSecondary;
-  });
+      let filtered = menuData.filter(item => {
+        const matchPrimary = primaryChoices.length === 0 || primaryChoices.some(tag => item.tags.includes(tag));
+        const matchSecondary = secondaryChoices.length === 0 || secondaryChoices.some(tag => item.tags.includes(tag));
+        return matchPrimary && matchSecondary;
+      });
 
-  // 필터링 결과가 없으면 전체 메뉴에서 랜덤
-  if (filtered.length === 0) filtered = menuData;
+      if (filtered.length === 0) filtered = menuData;
 
-  // 랜덤으로 한 개 선택
-  const randomItem = filtered[Math.floor(Math.random() * filtered.length)];
-  const span = document.createElement("span");
-  span.className = "menu-item";
-  span.textContent = randomItem.name;
-  resultDiv.appendChild(span);
-}
+      const randomItem = filtered[Math.floor(Math.random() * filtered.length)];
+      const span = document.createElement("span");
+      span.className = "menu-item";
+      span.textContent = randomItem.name;
+      resultDiv.appendChild(span);
+    }
   </script>
 
-  <div id="footer-info" style="margin-top:50px; text-align:center; font-size:0.9em; color:#555;">
-  <p>🍚 요리 &lt; 집밥이라면 기본 선택. 메인 요리</p>
-  <p>🥕 반찬 &lt; 무슨 반찬을 만들지 고민될 때만 선택!</p>
-  <p>🍗 배달 &lt; 배달이나 간단 포장음식
-  <p>🍝 외식 &lt; 식당에서 먹을만한?</p>
-  <p>🍜 간단 &lt; 간단식이나 간식</p>
+  <div id="footer-info">
+    <p>🍚 요리 &lt; 집밥이라면 기본 선택. 메인 요리</p>
+    <p>🥕 반찬 &lt; 무슨 반찬을 만들지 고민될 때만 선택!</p>
+    <p>🍗 배달 &lt; 배달이나 간단 포장음식</p>
+    <p>🍝 외식 &lt; 식당에서 먹을만한?</p>
+    <p>🍜 간단 &lt; 간단식이나 간식</p>
   </div>
-  
+
 </body>
 </html>
