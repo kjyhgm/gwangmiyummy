@@ -2,37 +2,93 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>울엄마 음식 추천</title>
+  <title>오늘 뭐 먹지?</title>
+
+  <!-- 폰트 불러오기 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    h1, h2 { margin-bottom: 10px; }
-    button { margin: 5px; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; }
-    
-    /* 버튼 기본 색 */
+    body {
+      font-family: 'Gowun Dodum', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      background-color: #fff;
+      min-height: 100vh;
+    }
+
+    h1 { font-size: 2em; margin-bottom: 20px; }
+
+    /* 메뉴 결과 박스 */
+    .menu {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* 각 메뉴 태그 */
+    .menu-item {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #e9d9ff;
+      color: #5c3cfa;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .menu-item:hover {
+      background-color: #5c3cfa;
+      color: #fff;
+    }
+
+    /* 버튼 스타일 */
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
     .primary-btn { background-color: #f39c12; color: white; }
     .secondary-btn { background-color: #3498db; color: white; }
-
-    /* 선택 시 색 */
     .selected { background-color: #2ecc71 !important; }
 
-    .menu { margin: 20px 0; font-size: 1.2em; color: green; }
+    .category-title { margin-top: 20px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+    .container { text-align: center; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <h1>울엄마 음식 추천</h1>
+  <h1>🍚 오늘 뭐 먹지?</h1>
 
-  <div class="menu" id="result">메뉴 추천 결과 😎</div>
+  <div class="menu" id="result">이거나 처먹어 😎</div>
 
-  <h2>1차 선택 (상황)</h2>
-  <div id="primary">
+  <div class="container">
+    <button onclick="showResult()" style="background-color:black; color:white; padding:10px 30px; border-radius:15px;">추천</button>
+  </div>
+
+  <!-- 1차 카테고리 -->
+  <div class="category-title">📂 종류</div>
+  <div id="primary" class="container">
     <button class="primary-btn" onclick="selectPrimary('배달', this)">배달</button>
     <button class="primary-btn" onclick="selectPrimary('요리', this)">요리</button>
     <button class="primary-btn" onclick="selectPrimary('외식', this)">외식</button>
     <button class="primary-btn" onclick="selectPrimary('간식', this)">간식</button>
   </div>
 
-  <h2>2차 선택 (음식 종류)</h2>
-  <div id="secondary">
+  <!-- 2차 카테고리 -->
+  <div class="category-title">🍗 형태</div>
+  <div id="secondary" class="container">
     <button class="secondary-btn" onclick="selectSecondary('밥', this)">밥</button>
     <button class="secondary-btn" onclick="selectSecondary('국', this)">국</button>
     <button class="secondary-btn" onclick="selectSecondary('면', this)">면</button>
@@ -40,38 +96,61 @@
   </div>
 
   <script>
-    const menuData = {
-      "배달": { "밥": ["김치볶음밥"], "국": ["순두부찌개"], "면": ["짜장면"], "기타": ["치킨"] },
-      "요리": { "밥": ["참치볶음밥"], "국": ["미역국"], "면": ["간장라면"], "기타": ["계란말이"] },
-      "외식": { "밥": ["제육볶음 정식"], "국": ["삼계탕"], "면": ["칼국수"], "기타": ["돈까스"] },
-      "간식": { "밥": ["주먹밥"], "국": ["컵국"], "면": ["컵라면"], "기타": ["떡볶이"] }
-    };
+    // 메뉴 데이터 (태그 형식)
+    const menuData = [
+      { name: "닭강정", tags: ["배달", "간식", "고기"] },
+      { name: "김치볶음밥", tags: ["요리", "밥"] },
+      { name: "제육볶음 정식", tags: ["외식", "밥", "고기"] },
+      { name: "컵라면", tags: ["간식", "면"] },
+      { name: "미역국", tags: ["요리", "국"] },
+      { name: "치킨", tags: ["배달", "기타", "고기"] },
+      { name: "칼국수", tags: ["외식", "면"] },
+      { name: "떡볶이", tags: ["간식", "기타"] },
+      { name: "삼계탕", tags: ["외식", "국", "고기"] },
+      { name: "계란말이", tags: ["요리", "기타"] }
+    ];
 
     let primaryChoice = "";
     let secondaryChoice = "";
 
     function selectPrimary(choice, btn) {
       primaryChoice = choice;
-      // 선택 버튼 색 변경
       document.querySelectorAll('#primary button').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      showResult();
     }
 
     function selectSecondary(choice, btn) {
       secondaryChoice = choice;
-      // 선택 버튼 색 변경
       document.querySelectorAll('#secondary button').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      showResult();
     }
 
     function showResult() {
-      if(primaryChoice && secondaryChoice){
-        const options = menuData[primaryChoice][secondaryChoice];
-        const randomMenu = options[Math.floor(Math.random() * options.length)];
-        document.getElementById("result").textContent = `추천 메뉴: ${randomMenu}`;
+      if(!primaryChoice || !secondaryChoice){
+        alert("먼저 종류와 형태를 선택하세요 ㅋㅋ");
+        return;
       }
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // 초기화
+
+      // 필터링
+      const filtered = menuData.filter(item => 
+        item.tags.includes(primaryChoice) && item.tags.includes(secondaryChoice)
+      );
+
+      if(filtered.length === 0){
+        resultDiv.textContent = "조건에 맞는 메뉴가 없네 ㅋㅋ";
+        return;
+      }
+
+      // span으로 결과 출력
+      filtered.forEach(item => {
+        const span = document.createElement("span");
+        span.className = "menu-item";
+        span.textContent = item.name;
+        resultDiv.appendChild(span);
+      });
     }
   </script>
 </body>
